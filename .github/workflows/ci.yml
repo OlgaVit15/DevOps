@@ -3,23 +3,27 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - main  # Запускать при пушах в ветку main
+  pull_request:
+    branches:
+      - main  # Запускать при создании pull request в ветку main
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Использовать последнюю версию Ubuntu
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2  # Клонировать репозиторий
 
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: '24' # Укажите версию JDK
+          java-version: '11'  # Укажите версию JDK, которая нужна вашему проекту
+          java-package: jdk  # Установить JDK
 
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean install  # Собрать проект
 
       - name: Run tests
-        run: mvn test
+        run: mvn test  # Запустить тесты
