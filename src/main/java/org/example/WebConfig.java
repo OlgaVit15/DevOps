@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Разрешает CORS для всех маршрутов
-                .allowedOrigins("http://localhost:63342") // Замените на ваш клиентский адрес
+                .allowedOrigins("http://localhost:3000") // Замените на ваш клиентский адрес
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Разрешенные методы
                 .allowedHeaders("*"); // Разрешенные заголовки
     }
