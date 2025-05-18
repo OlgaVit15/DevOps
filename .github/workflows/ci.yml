@@ -19,7 +19,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: '11'  # Укажите версию JDK, которая нужна вашему проекту
+          java-version: '17'  # Укажите версию JDK, которая нужна вашему проекту
           java-package: jdk  # Установить JDK
 
       - name: Build with Maven
