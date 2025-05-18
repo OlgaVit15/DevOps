@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - master  # Запускать при пушах в ветку main
+      - master  # Запускать при пушах в ветку master
   pull_request:
     branches:
-      - master  # Запускать при создании pull request в ветку main
+      - master  # Запускать при создании pull request в ветку master
 
 jobs:
   build:
@@ -24,6 +24,20 @@ jobs:
 
       - name: Build with Maven
         run: mvn clean install  # Собрать проект
+
+  test:
+    runs-on: ubuntu-latest  # Использовать последнюю версию Ubuntu
+    needs: build  # Зависимость от job build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  # Клонировать репозиторий
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17'  # Укажите версию JDK, которая нужна вашему проекту
+          java-package: jdk  # Установить JDK
 
       - name: Run tests
         run: mvn test  # Запустить тесты
