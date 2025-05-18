@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - main  # Запускать при пушах в ветку main
+      - master  # Запускать при пушах в ветку main
   pull_request:
     branches:
-      - main  # Запускать при создании pull request в ветку main
+      - master  # Запускать при создании pull request в ветку main
 
 jobs:
   build:
