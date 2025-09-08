@@ -60,8 +60,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: |     
-          cd ../../
+        run: |    
           docker build -t vvo15/my-image-server1:${{ github.sha }} -d Dockerfile .
       
 
