@@ -1,0 +1,340 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: db
+          image: postgres
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: "example"
+            - name: POSTGRES_PASSWORD
+              value: "example"
+            - name: POSTGRES_DB
+              value: "mydatabase"
+          resources:
+            requests:
+              memory: "256Mi"  # Запрос памяти
+              cpu: "500m"      # Запрос CPU
+            limits:
+              memory: "512Mi"  # Лимит памяти
+              cpu: "1"         # Лимит CPU
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-data
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-data-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  type: NodePort
+  ports:
+    - port: 5432
+      targetPort: 5432
+      nodePort: 30001  # Укажите желаемый NodePort для доступа к базе данных
+  selector:
+    app: db
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adminer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adminer
+  template:
+    metadata:
+      labels:
+        app: adminer
+    spec:
+      containers:
+        - name: adminer
+          image: adminer
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adminer
+spec:
+  type: NodePort
+  ports:
+    - port: 8081
+      targetPort: 8080
+      nodePort: 30002  # Укажите желаемый NodePort для доступа к Adminer
+  selector:
+    app: adminer
+
+---
+#
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: pgpool
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: pgpool
+#  template:
+#    metadata:
+#      labels:
+#        app: pgpool
+#    spec:
+#      containers:
+#        - name: pgpool
+#          image: pgpool/pgpool:4.0.23 # Используйте актуальный образ Pgpool-II
+#          ports:
+#            - containerPort: 5432
+#          env:
+#            - name: PGPOOL_BACKEND_NODES
+#              value: "0:db:5432" # Настройка backend-узлов для Pgpool-II
+#            - name: PGPOOL_PARAMS_BACKEND_HOSTNAME0
+#              value: "db" # Укажите имя сервиса или IP-адрес вашего бэкенда
+#            - name: PGPOOL_USER
+#              value: "example"
+#            - name: PGPOOL_PASSWORD
+#              value: "example"
+#            - name: PGPOOL_DB_NAME
+#              value: "mydatabase"
+#
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: pgpool
+#spec:
+#  type: NodePort
+#  ports:
+#    - port: 5432
+#      targetPort: 5432
+#      nodePort: 30013
+#  selector:
+#    app: pgpool
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      initContainers:
+        - name: wait-for-db
+          image: busybox
+          command: ['sh', '-c', 'until nc -z db 5432; do echo waiting for db; sleep 2; done;']
+      containers:
+        - name: app
+          image: vvo15/my-image-server
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://db:5432/mydatabase"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "example"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "example"
+            - name: POD_NAME
+              valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: "100m"   # Минимальное количество CPU
+              memory: "256Mi" # Минимальное количество памяти
+            limits:
+              cpu: "200m"   # Максимальное количество CPU
+              memory: "512Mi" # Максимальное количество памяти
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080  # Укажите желаемый NodePort для доступа к вашему приложению
+  selector:
+    app: app
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react-app
+  template:
+    metadata:
+      labels:
+        app: react-app
+    spec:
+      containers:
+        - name: react-app
+          image: vvo15/my-image
+          ports:
+            - containerPort: 80
+#            - containerPort: 3030
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-app
+spec:
+  type: NodePort
+  ports:
+    - port: 3000
+      targetPort: 80
+      nodePort: 30004  # Укажите желаемый NodePort для доступа к React-приложению
+#    - port: 3030
+#      targetPort: 3030
+#      nodePort: 30045  # Укажите желаемый NodePort для доступа к React-приложению
+  selector:
+    app: react-app
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-exporter
+  template:
+    metadata:
+      labels:
+        app: postgres-exporter
+    spec:
+      containers:
+        - name: postgres-exporter
+          image: wrouesnel/postgres_exporter
+          env:
+            - name: DATA_SOURCE_NAME
+              value: "user=example password=example host=db port=5432 dbname=mydatabase sslmode=disable"
+          ports:
+            - containerPort: 9187 # Порт по умолчанию для PostgreSQL Exporter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-exporter
+spec:
+  ports:
+    - port: 9187
+      targetPort: 9187
+  selector:
+    app: postgres-exporter
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi # Укажите необходимый объем хранилища для PostgreSQL.
+
+---
+
+## Добавление kube-state-metrics
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: kube-state-metrics
+#  namespace: kube-system  # Обычно kube-state-metrics запускается в kube-system namespace
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: kube-state-metrics
+#  template:
+#    metadata:
+#      labels:
+#        app: kube-state-metrics
+#    spec:
+#      containers:
+#        - name: kube-state-metrics
+#          image: k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.16.0 # Убедитесь, что используете актуальный образ
+#          ports:
+#            - containerPort: 8082
+#
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: kube-state-metrics
+#  namespace: kube-system # Сервис также должен быть в kube-system namespace
+#spec:
+#  ports:
+#    - port: 8082
+#      targetPort: 8082
+#  selector:
+#    app: kube-state-metrics
+#
+#---
+#
+#apiVersion: monitoring.coreos.com/v1
+#kind: ServiceMonitor
+#metadata:
+#  name: kube-state-metrics
+#  labels:
+#    release: prometheus # Метка должна соответствовать вашему Prometheus Operator
+#spec:
+#  selector:
+#    matchLabels:
+#      app: kube-state-metrics # Метка сервиса kube-state-metrics
+#  namespace: kube-system # Или namespace, в котором развернут kube-state-metrics
+#  endpoints:
+#    - port: http-metrics
+#      path: /metrics # Путь к метрикам
+
+
+
+
+
