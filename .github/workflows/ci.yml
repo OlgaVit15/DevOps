@@ -60,7 +60,7 @@ jobs:
         run: |
           cd ..
           cd ..
-          docker build -t vvo15/my-image-server1:${{ github.sha }} -f .
+          docker build -t vvo15/my-image-server1:${{ github.sha }} .
       
 
       - name: Push Docker image
