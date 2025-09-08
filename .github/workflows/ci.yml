@@ -40,10 +40,16 @@ jobs:
           java-package: jdk
 
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean package
 
       - name: List target directory
         run: ls -la target  # Проверка наличия JAR файла
+
+      - name: Upload JAR file as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: my-jar-artifact
+          path: target/DevOps-1.0-SNAPSHOT.jar  # Укажите путь к вашему JAR файлу
 
   docker:
     runs-on: ubuntu-latest
@@ -59,10 +65,14 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: my-jar-artifact
+
       - name: Build Docker image
-        run: |    
+        run: |
           docker build -t vvo15/my-image-server1:${{ github.sha }} -f Dockerfile .
-      
 
       - name: Push Docker image
         run: |
