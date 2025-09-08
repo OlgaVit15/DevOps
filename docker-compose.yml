@@ -1,59 +1,45 @@
-version: '3.8'
-
-services:
-  db:
-    image: postgres
-    restart: always
-    ports:
-      - "5432:5432"  # Добавляем проброс порта
-    shm_size: 128mb
-    environment:
-      POSTGRES_USER: example
-      POSTGRES_PASSWORD: example
-      POSTGRES_DB: mydatabase
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - mynetwork
-
-#  app:
-#    image: adminer
+#version: '3.8'
+#
+#services:
+#  db:
+#    image: postgres
 #    restart: always
-#    depends_on:
-#      - db
+#    ports:
+#      - "5432:5432"  # Добавляем проброс порта
+#    shm_size: 128mb
 #    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydatabase
-#      SPRING_DATASOURCE_USERNAME: example
-#      SPRING_DATASOURCE_PASSWORD: example
+#      POSTGRES_USER: example
+#      POSTGRES_PASSWORD: example
+#      POSTGRES_DB: mydatabase
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
 #    networks:
 #      - mynetwork
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8081:8080
-    networks:
-      - mynetwork
-
-  app:
-    build:
-      context: .  # Указываем контекст сборки (папка с Dockerfile)
-      dockerfile: Dockerfile  # Указываем имя Dockerfile (если оно отличается)
-    restart: always
-    depends_on:
-      - db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydatabase
-      SPRING_DATASOURCE_USERNAME: example
-      SPRING_DATASOURCE_PASSWORD: example
-    ports:
-      - "8080:8080"
-    networks:
-      - mynetwork
-
+#
+##  app:
+##    image: adminer
+##    restart: always
+##    depends_on:
+##      - db
+##    environment:
+##      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydatabase
+##      SPRING_DATASOURCE_USERNAME: example
+##      SPRING_DATASOURCE_PASSWORD: example
+##    networks:
+##      - mynetwork
+#
+#  adminer:
+#    image: adminer
+#    restart: always
+#    ports:
+#      - 8081:8080
+#    networks:
+#      - mynetwork
+#
 #  app:
-#    image: vvo15/my_image_server
+#    build:
+#      context: .  # Указываем контекст сборки (папка с Dockerfile)
+#      dockerfile: Dockerfile  # Указываем имя Dockerfile (если оно отличается)
 #    restart: always
 #    depends_on:
 #      - db
@@ -65,19 +51,33 @@ services:
 #      - "8080:8080"
 #    networks:
 #      - mynetwork
-
-  react-app:
-    image: vvo15/my-image  # Указываем образ из Docker Hub
-    restart: always
-    depends_on:
-      - app
-    ports:
-      - "3000:80"  # Проброс порта для React-приложения
-#    networks:
-#      - mynetwork
-
-volumes:
-  postgres_data:
-
-networks:
-  mynetwork:
+#
+##  app:
+##    image: vvo15/my_image_server
+##    restart: always
+##    depends_on:
+##      - db
+##    environment:
+##      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydatabase
+##      SPRING_DATASOURCE_USERNAME: example
+##      SPRING_DATASOURCE_PASSWORD: example
+##    ports:
+##      - "8080:8080"
+##    networks:
+##      - mynetwork
+#
+#  react-app:
+#    image: vvo15/my-image  # Указываем образ из Docker Hub
+#    restart: always
+#    depends_on:
+#      - app
+#    ports:
+#      - "3000:80"  # Проброс порта для React-приложения
+##    networks:
+##      - mynetwork
+#
+#volumes:
+#  postgres_data:
+#
+#networks:
+#  mynetwork:
