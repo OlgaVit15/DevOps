@@ -2,7 +2,7 @@
 FROM openjdk:17-jdk-slim
 
 # Устанавливаем рабочую директорию
-# WORKDIR /app
+WORKDIR /app
 
 # Копируем файл jar вашего приложения в контейнер
 COPY target/DevOps-1.0-SNAPSHOT.jar app.jar
