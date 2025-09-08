@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Копируем файл jar вашего приложения в контейнер
-COPY targets/DevOps-1.0-SNAPSHOT.jar app.jar
+COPY DevOps-1.0-SNAPSHOT.jar app.jar
 
 # Указываем команду для запуска приложения
 ENTRYPOINT ["java", "-jar", "app.jar"]
