@@ -9,24 +9,24 @@ on:
       - master
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: '17'
-          java-package: jdk
-
-      - name: Build with Maven
-        run: mvn clean package install
-
-      - name: List target directory
-        run: ls -la target  # Проверка наличия JAR файла
+#  build:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: '17'
+#          java-package: jdk
+#
+#      - name: Build with Maven
+#        run: mvn clean package install
+#
+#      - name: List target directory
+#        run: ls -la target  # Проверка наличия JAR файла
 
 #  test:
 #    runs-on: ubuntu-latest
@@ -65,7 +65,7 @@ jobs:
 
       - name: Tag Docker image
         run: |
-          docker tag my-image-server1:${{ github.sha }} vvo15/my-image-server1:latest
+          docker tag vvo15/my-image-server1:${{ github.sha }} vvo15/my-image-server1:latest
 
       - name: Push Docker image
         run: |
