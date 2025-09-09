@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -61,4 +61,3 @@ jobs:
         run: |
           docker build -t vvo15/my-image-server1:latest .
           docker push vvo15/my-image-server1:latest
-          
