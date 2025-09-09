@@ -11,9 +11,9 @@
     <properties>
         <java.version>17</java.version> <!-- Укажите вашу версию Java -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <sonar.projectKey>my-project</sonar.projectKey>
+        <sonar.projectKey>DevOps</sonar.projectKey>
         <sonar.host.url>http://localhost:9000</sonar.host.url>
-        <sonar.login>YOUR_SONAR_TOKEN</sonar.login> <!-- Замените на ваш токен -->
+        <sonar.login>sqb_886c1390e3fd78e65642c9122e9161cb2194ee42</sonar.login> <!-- Замените на ваш токен -->
     </properties>
 
     <dependencies>
