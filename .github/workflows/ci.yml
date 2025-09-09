@@ -9,45 +9,45 @@ on:
       - master
 
 jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#
-#      - name: Set up JDK
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: '17'
-#          java-package: jdk
-#
-#      - name: Build with Maven
-#        run: mvn clean package install
-#
-#      - name: List target directory
-#        run: ls -la target  # Проверка наличия JAR файла
+  build:
+    runs-on: ubuntu-latest
 
-#  test:
-#    runs-on: ubuntu-latest
-#    needs: build
-#
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v2
-#
-#      - name: Set up JDK
-#        uses: actions/setup-java@v1
-#        with:
-#          java-version: '17'
-#          java-package: jdk
-#
-#      - name: Run tests
-#        run: mvn test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17'
+          java-package: jdk
+
+      - name: Build with Maven
+        run: mvn clean package install
+
+      - name: List target directory
+        run: ls -la target  # Проверка наличия JAR файла
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17'
+          java-package: jdk
+
+      - name: Run tests
+        run: mvn test
 
   docker:
     runs-on: ubuntu-latest
-#    needs: build
+    needs: test
 
     steps:
       - name: Checkout code
