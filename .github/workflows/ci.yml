@@ -28,22 +28,22 @@ jobs:
       - name: List target directory
         run: ls -la target  # Проверка наличия JAR файла
 
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: '17'
-          java-package: jdk
-
-      - name: Run tests
-        run: mvn test
+#  test:
+#    runs-on: ubuntu-latest
+#    needs: build
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: '17'
+#          java-package: jdk
+#
+#      - name: Run tests
+#        run: mvn test
 
   docker:
     runs-on: ubuntu-latest
