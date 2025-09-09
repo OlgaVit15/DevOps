@@ -65,7 +65,7 @@ jobs:
 
       - name: Tag Docker image
         run: |
-          docker tag vvo15/my-image-server1:latest
+          docker tag my-image-server1:${{ github.sha }} vvo15/my-image-server1:latest
 
       - name: Push Docker image
         run: |
