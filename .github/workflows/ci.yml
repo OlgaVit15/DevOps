@@ -49,9 +49,6 @@ jobs:
 
       - name: Wait for SonarQube analysis to complete
         uses: sonarsource/sonarcloud-github-action@master
-        with:
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
-          project-key: ${{ secrets.SONAR_PROJECT_KEY }}
 
   test:
     runs-on: ubuntu-latest
