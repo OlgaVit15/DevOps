@@ -45,7 +45,7 @@ jobs:
         run: mvn clean package install
 
       - name: SonarQube Scan
-        run: sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=olgavit15 -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} -Dsonar.projectName=DevOps -Dsonar.sources=$GITHUB_WORKSPACE -Dsonar.branch.name=$GITHUB_HEAD_REF -Dsonar.java.binaries=target
+        run: sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=olgavit15 -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} -Dsonar.projectName=DevOps -Dsonar.sources=$GITHUB_WORKSPACE -Dsonar.branch.name=$GITHUB_HEAD_REF -Dsonar.java.binaries=target/classes
 
   test:
     runs-on: ubuntu-latest
