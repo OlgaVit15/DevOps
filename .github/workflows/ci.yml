@@ -45,13 +45,7 @@ jobs:
         run: mvn clean package install
 
       - name: SonarQube Scan
-        run: sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=olgavit15 -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} -Dsonar.projectName=DevOps -Dsonar.sources=$GITHUB_WORKSPACE -Dsonar.branch.name=$GITHUB_HEAD_REF -Dsonar.java.binaries=target -Dsonar.jacoco.reportPaths=target/jacoco.exec -Dsonar.exclusions=**/ItemApplication.java,**/WebConfig.java,**/src/test/**
-
-      - name: Wait for SonarQube analysis to complete
-        uses: sonarsource/sonarcloud-github-action@master
-        with:
-          token: ${{ secrets.SONAR_TOKEN }} # или sonar-token в зависимости от документации
-          project-key: ${{ secrets.SONAR_PROJECT_KEY }}
+        run: sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=olgavit15 -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} -Dsonar.projectName=DevOps -Dsonar.sources=$GITHUB_WORKSPACE -Dsonar.branch.name=$GITHUB_HEAD_REF -Dsonar.java.binaries=target -Dsonar.jacoco.reportPaths=target/jacoco.exec -Dsonar.exclusions=**/ItemApplication.java,**/WebConfig.java,**/src/test/** -Dsonar.qualitygate.wait=true
 
   test:
     runs-on: ubuntu-latest
