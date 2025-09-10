@@ -29,7 +29,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - uses: actions/checkout@master
         with:
           fetch-depth: 0
@@ -37,6 +36,9 @@ jobs:
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '17'
+      # Setup sonar-scanner
+      - name: Setup SonarQube
+        uses: warchant/setup-sonar-scanner@v7
 
       - name: SonarQube Scan
         run: sonar-scanner
