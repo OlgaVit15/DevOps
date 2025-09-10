@@ -42,7 +42,8 @@ jobs:
       # Run sonar-scanner
       - name: SonarQube Scan
         run: sonar-scanner
-          -Dsonar.host.url=${{ secrets.SONAR_URL }}
+          -Dsonar.host.url=https://sonarqube.company.com
+#          ${{ secrets.SONAR_URL }}
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
           -Dsonar.sources=$GITHUB_WORKSPACE
