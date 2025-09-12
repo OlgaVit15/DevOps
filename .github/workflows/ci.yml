@@ -99,29 +99,73 @@ jobs:
 #      - name: Push Docker image
 #        run: |
 #          docker push vvo15/my-image-server1
-  deploy_minikube:
+  deploy_minikube_yc:
     runs-on: ubuntu-latest
-#    needs: docker
+    needs: docker
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v1
+      - name: Install Yandex Cloud CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          echo "$HOME/.yandex/bin" >> $GITHUB_PATH
+
+      - name: Authenticate with Yandex Cloud
+        run: |
+          yc config set token ${{ secrets.YC_OAUTH_TOKEN }}
+          yc config set cloud-id ${{ secrets.YC_CLOUD_ID }}
+          yc config set folder-id ${{ secrets.YC_FOLDER_ID }}
+
+      - name: Create Yandex Cloud VM
+        run: |
+          yc compute instance create \
+            --name my-vm-${{ github.sha }} \
+            --zone ru-central1-a \
+            --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 \
+            --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2004-lts-stable,size=30 \
+            --ssh-key ~/.ssh/id_rsa.pub \
+            --metadata serial-port-enable=true
+
+      - name: Get VM IP Address
+        id: get_vm_ip
+        run: |
+          VM_NAME="my-vm-${{ github.sha }}"
+          INSTANCE_ID=$(yc compute instance get $VM_NAME --format json | jq -r .id)
+          VM_IP=$(yc compute instance get $VM_NAME --format json | jq -r '.network_interfaces[0].primary_v4_address.one_to_one_nat.address')
+          echo "::set-output name=ip::$VM_IP"
+
+      - name: Configure SSH
+        uses: webfactory/ssh-agent@v0.5.4
         with:
-          version: 'v1.28.0' # Specify a specific version
+          ssh-private-key: ${{ secrets.YC_SSH_PRIVATE_KEY }}
 
-      - name: Install minikube
+      - name: Install Docker on VM
         run: |
-          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ steps.get_vm_ip.outputs.ip }} "sudo apt-get update && sudo apt-get install -y docker.io"
 
-      - name: Start minikube
-        run: minikube start
-
-      - name: Apply deployment to minikube
+      - name: Install kubectl
         run: |
-          kubectl apply -f deployment.yaml
-          kubectl get service app # Replace with your service name to confirm it exists
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ steps.get_vm_ip.outputs.ip }} "curl -LO https://dl.k8s.io/release/v1.28.0/bin/linux/amd64/kubectl && sudo install kubectl /usr/local/bin/kubectl && kubectl version --client"
+
+      - name: Install minikube on VM
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ steps.get_vm_ip.outputs.ip }} "curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && sudo install minikube-linux-amd64 /usr/local/bin/minikube"
+
+      - name: Start minikube on VM
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ steps.get_vm_ip.outputs.ip }} "sudo minikube start --driver=docker"
+
+      - name: Copy deployment.yaml to VM
+        run: |
+          scp -o StrictHostKeyChecking=no deployment.yaml ubuntu@${{ steps.get_vm_ip.outputs.ip }}:/home/ubuntu/deployment.yaml
+
+      - name: Apply deployment to minikube on VM
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ steps.get_vm_ip.outputs.ip }} "sudo kubectl apply -f /home/ubuntu/deployment.yaml"
+
+      - name: Get service status on VM
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ steps.get_vm_ip.outputs.ip }} "sudo kubectl get service app" # Replace "app" with your actual service name
 
