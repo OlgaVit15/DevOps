@@ -121,15 +121,15 @@ jobs:
       - name: Start minikube
         run: minikube start
 
-      - name: Load Docker image into minikube
-        run: |
-          eval $(minikube docker-env) # Important: Configure Docker CLI to use minikube's Docker daemon
-          docker load -i <(docker save vvo15/my-image-server1:latest)
+#      - name: Load Docker image into minikube
+#        run: |
+#          eval $(minikube docker-env) # Important: Configure Docker CLI to use minikube's Docker daemon
+#          docker load -i <(docker save vvo15/my-image-server1:latest)
 
       - name: Apply deployment to minikube
         run: |
-          eval $(minikube docker-env) # Ensure kubectl uses minikube's Docker
+#          eval $(minikube docker-env) # Ensure kubectl uses minikube's Docker
           kubectl apply -f deployment.yaml
-          kubectl rollout status deployment/your-deployment-name # Replace with your deployment name
-          kubectl get service your-service-name # Replace with your service name to confirm it exists
+          kubectl rollout status deployment/ # Replace with your deployment name
+          kubectl get service app # Replace with your service name to confirm it exists
 
