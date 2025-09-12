@@ -108,6 +108,7 @@ jobs:
 
       - name: Install Yandex Cloud CLI
         run: |
+          mkdir -p $HOME/.yandex/bin
           curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
           echo "$HOME/.yandex/bin" >> $GITHUB_PATH
           echo "Yandex Cloud CLI installed at: $HOME/.yandex/bin/yc"
@@ -147,4 +148,4 @@ jobs:
 
       - name: Deploy Docker container on VM
         run: |
-            ssh -o StrictHostKeyChecking=no ubuntu@${{ env.VM_IP }} "docker run -d -p 80:8080 vvo15/my-image-server1:${{ github.sha }}"
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ env.VM_IP }} "docker run -d -p 80:8080 vvo15/my-image-server1:${{ github.sha }}"
