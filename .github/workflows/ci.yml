@@ -123,6 +123,5 @@ jobs:
       - name: Apply deployment to minikube
         run: |
           kubectl apply -f deployment.yaml
-#          kubectl rollout status deployment/ # Replace with your deployment name
           kubectl get service app # Replace with your service name to confirm it exists
 
