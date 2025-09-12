@@ -101,7 +101,6 @@ jobs:
 #          docker push vvo15/my-image-server1
   deploy_minikube_yc:
     runs-on: ubuntu-latest
-    needs: docker
 
     steps:
       - name: Checkout code
