@@ -115,8 +115,11 @@ jobs:
 
       - name: Configure kubectl for Minikube
         run: |
-          echo "${{ secrets.MINIKUBE_KUBE_CONFIG }}" > ~/.kube/config
+          mkdir -p ~/.kube
+          echo "${{ secrets.MINIKUBE_KUBE_CONFIG }}" | base64 --decode > ~/.kube/config
+          chmod 600 ~/.kube/config
 
       - name: Deploy to Minikube
         run: |
           kubectl apply -f deployment.yaml
+
