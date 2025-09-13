@@ -34,7 +34,7 @@ services:
       SPRING_DATASOURCE_USERNAME: example
       SPRING_DATASOURCE_PASSWORD: example
     ports:
-      - "8080:30080"
+      - "30080:30080"
     networks:
       - mynetwork
 
@@ -44,7 +44,7 @@ services:
     depends_on:
       - app
     ports:
-      - "3000:30080"  # Проброс порта для React-приложения
+      - "3000:3000"  # Проброс порта для React-приложения
 #    networks:
 #      - mynetwork
 
