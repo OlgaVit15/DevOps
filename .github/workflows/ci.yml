@@ -123,6 +123,7 @@ jobs:
           vm-disk-size: 16Gb
           entrypoint: /bin/bash /home/ubuntu/deploy.sh # Запускаем скрипт deploy.sh
           vm-subnet-id: ${{ secrets.YC_SUBNET_ID }}
+          docker-compose-path: docker-compose.yml
           user-data-path: user_data.txt
 
       - name: Output VM details
