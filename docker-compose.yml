@@ -34,7 +34,7 @@ services:
       SPRING_DATASOURCE_USERNAME: example
       SPRING_DATASOURCE_PASSWORD: example
     ports:
-      - "30080:30080"
+      - "8080:8080"
     networks:
       - mynetwork
 
