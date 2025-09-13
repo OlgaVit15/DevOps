@@ -118,7 +118,7 @@ jobs:
           vm-service-account-id: ${{ secrets.YC_SERVICE_ACCOUNT_ID }}
           folder-id: ${{ secrets.YC_FOLDER_ID }}
           vm-cores: 2
-          vm-memory: 512Mb
+          vm-memory: 2048Mb
           vm-name: my-app-vm
           vm-disk-size: 16Gb
           vm-subnet-id: ${{ secrets.YC_SUBNET_ID }}
