@@ -123,7 +123,7 @@ jobs:
           vm-disk-size: 5Gb
           vm-subnet-id: ${{ secrets.YC_SUBNET_ID }}
           docker-compose-path: docker-compose.yc.yaml
-          user-data-path: user-data.txt
+          user-data-path: user_data.txt
 
       - name: Output VM details
         run: |
