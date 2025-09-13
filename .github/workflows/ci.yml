@@ -101,6 +101,7 @@ jobs:
           docker push vvo15/my-image-server1
   deploy:
     runs-on: ubuntu-latest
+    needs: docker
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
