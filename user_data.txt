@@ -2,6 +2,19 @@
 # Обновление пакетов
 apt-get update
 
+apt-get install -y openssh-server
+
+# Создание директории для SSH ключей
+mkdir -p /home/ubuntu/.ssh
+chmod 700 /home/ubuntu/.ssh
+
+# Добавление вашего публичного ключа
+echo "${SSH_PUBLIC_KEY}" >> /home/ubuntu/.ssh/authorized_keys
+chmod 600 /home/ubuntu/.ssh/authorized_keys
+
+# Установка правильных прав на домашнюю директорию
+chown -R ubuntu:ubuntu /home/ubuntu/.ssh
+
 # Установка необходимых пакетов
 apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 
@@ -26,10 +39,10 @@ docker run -d
 
 # Запуск контейнера с Spring Boot приложением
 docker run -d
-  --name spring-boot-app
+  --name vvo15/my-image-server1
   -p 8080:8080
   --link postgres-db:postgres
   -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
-  -e SPRING_DATASOURCE_USERNAME=myuser
-  -e SPRING_DATASOURCE_PASSWORD=mypassword
+  -e SPRING_DATASOURCE_USERNAME=example
+  -e SPRING_DATASOURCE_PASSWORD=example
   my-spring-boot-app:latest # Замените на имя вашего Docker образа
