@@ -1,0 +1,35 @@
+#!/bin/bash
+# Обновление пакетов
+apt-get update
+
+# Установка необходимых пакетов
+apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+
+# Установка Docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+apt-get update
+apt-get install -y docker-ce
+
+# Запуск Docker
+systemctl start docker
+systemctl enable docker
+
+# Запуск контейнера с PostgreSQL
+docker run -d
+  --name postgres-db
+  -e POSTGRES_USER=myuser
+  -e POSTGRES_PASSWORD=mypassword
+  -e POSTGRES_DB=mydatabase
+  -p 5432:5432
+  postgres:latest
+
+# Запуск контейнера с Spring Boot приложением
+docker run -d
+  --name spring-boot-app
+  -p 8080:8080
+  --link postgres-db:postgres
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
+  -e SPRING_DATASOURCE_USERNAME=myuser
+  -e SPRING_DATASOURCE_PASSWORD=mypassword
+  my-spring-boot-app:latest # Замените на имя вашего Docker образа
