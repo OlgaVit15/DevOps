@@ -105,12 +105,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up environment variables
-        run: |
-          echo "BACKEND_IMAGE=your-backend-image" >> $GITHUB_ENV
-          echo "FRONTEND_IMAGE=your-frontend-image" >> $GITHUB_ENV
-          echo "NGINX_IMAGE=your-nginx-image" >> $GITHUB_ENV
-
       - name: Deploy COI VM
         id: deploy-coi
         uses: yc-actions/yc-coi-deploy@v1.0.1
@@ -124,14 +118,10 @@ jobs:
           vm-service-account-id: ${{ secrets.YC_SERVICE_ACCOUNT_ID }}
           folder-id: ${{ secrets.YC_FOLDER_ID }}
           vm-cores: 2
-          vm-platform-id: 'standard-v2'
           vm-memory: 512Mb
           vm-name: my-app-vm
           vm-disk-size: 5Gb
-          vm-core-fraction: 5
           vm-subnet-id: ${{ secrets.YC_SUBNET_ID }}
-          docker-compose-path: './docker-compose.yc.yaml'
-          user-data-path: './'
 
       - name: Output VM details
         run: |
