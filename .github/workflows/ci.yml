@@ -119,7 +119,7 @@ jobs:
           folder-id: ${{ secrets.YC_FOLDER_ID }}
           vm-cores: 2
           vm-memory: 2048Mb
-          vm-name: my-app-vm
+          vm-name: my-app-vm1
           vm-disk-size: 16Gb
           entrypoint: /bin/bash /home/ubuntu/deploy.sh # Запускаем скрипт deploy.sh
           vm-subnet-id: ${{ secrets.YC_SUBNET_ID }}
