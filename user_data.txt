@@ -12,9 +12,6 @@ chmod 700 /home/ubuntu/.ssh
 echo "${SSH_PUBLIC_KEY}" >> /home/ubuntu/.ssh/authorized_keys
 chmod 600 /home/ubuntu/.ssh/authorized_keys
 
-# Установка правильных прав на домашнюю директорию
-chown -R ubuntu:ubuntu /home/ubuntu/.ssh
-
 # Установка необходимых пакетов
 apt-get install -y apt-transport-https ca-certificates curl software-properties-common
 
