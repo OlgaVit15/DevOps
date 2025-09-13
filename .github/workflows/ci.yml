@@ -128,3 +128,5 @@ jobs:
       - name: Output VM details
         run: |
           echo "VM deployment finished."
+          
+          
