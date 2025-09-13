@@ -1,45 +1,31 @@
 #!/bin/bash
-# Обновление пакетов
-apt-get update
 
-apt-get install -y openssh-server
+# Обновляем пакеты
+sudo apt update
 
-# Создание директории для SSH ключей
-mkdir -p /home/ubuntu/.ssh
-chmod 700 /home/ubuntu/.ssh
+# Устанавливаем Docker
+sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io
 
-# Добавление вашего публичного ключа
-echo "${SSH_PUBLIC_KEY}" >> /home/ubuntu/.ssh/authorized_keys
-chmod 600 /home/ubuntu/.ssh/authorized_keys
+# Устанавливаем Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 
-# Установка необходимых пакетов
-apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+# Клонируем репозиторий (замените на ваш URL)
+sudo apt install -y git
+git clone https://github.com/OlgaVit15/DevOps.git /home/ubuntu/app
 
-# Установка Docker
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-apt-get update
-apt-get install -y docker-ce
+# Переходим в директорию с docker-compose.yml
+cd /home/ubuntu/app
 
-# Запуск Docker
-systemctl start docker
-systemctl enable docker
-
-# Запуск контейнера с PostgreSQL
-docker run -d
-  --name postgres-db
-  -e POSTGRES_USER=myuser
-  -e POSTGRES_PASSWORD=mypassword
-  -e POSTGRES_DB=mydatabase
-  -p 5432:5432
-  postgres:latest
-
-# Запуск контейнера с Spring Boot приложением
-docker run -d
-  --name vvo15/my-image-server1
-  -p 8080:8080
-  --link postgres-db:postgres
-  -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
-  -e SPRING_DATASOURCE_USERNAME=example
-  -e SPRING_DATASOURCE_PASSWORD=example
-  my-spring-boot-app:latest # Замените на имя вашего Docker образа
+#Создаем скрипт запуска docker-compose
+cat <<EOF > deploy.sh
+#!/bin/bash
+# Запускаем Docker Compose
+sudo docker-compose up -d
+EOF
+chmod +x deploy.sh
+sudo chown -R ubuntu:ubuntu /home/ubuntu/app
