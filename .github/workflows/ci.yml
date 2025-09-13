@@ -101,61 +101,35 @@ jobs:
 #          docker push vvo15/my-image-server1
   deploy:
     runs-on: ubuntu-latest
-    needs: docker
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Yandex Cloud CLI
+      - name: Set up environment variables
         run: |
-          mkdir -p $HOME/.yandex/bin
-          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
-          echo "$HOME/.yandex/bin" >> $GITHUB_PATH
-          
-          # Проверка установки
-          echo "Checking Yandex Cloud CLI installation..."
-          ls -la $HOME/.yandex/bin
-          if [ -f "$HOME/.yandex/bin/yc" ]; then
-            echo "Yandex Cloud CLI installed successfully."
-            $HOME/.yandex/bin/yc version  # Вывод версии для проверки
-          else
-            echo "Yandex Cloud CLI not found!"
-            exit 1
-          fi
+          echo "BACKEND_IMAGE=your-backend-image" >> $GITHUB_ENV
+          echo "FRONTEND_IMAGE=your-frontend-image" >> $GITHUB_ENV
+          echo "NGINX_IMAGE=your-nginx-image" >> $GITHUB_ENV
 
-      - name: Authenticate with Yandex Cloud
-        run: |
-          $HOME/.yandex/bin/yc config set token ${{ secrets.YC_OAUTH_TOKEN }}
-          $HOME/.yandex/bin/yc config set cloud-id ${{ secrets.YC_CLOUD_ID }}
-          $HOME/.yandex/bin/yc config set folder-id ${{ secrets.YC_FOLDER_ID }}
+      - name: Deploy COI VM
+        id: deploy-coi
+        uses: yc-actions/yc-coi-deploy@v1.0.1
+        env:
+          YC_OAUTH_TOKEN: ${{ secrets.YC_OAUTH_TOKEN }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
 
-      - name: Create Yandex Cloud VM
-        run: |
-          $HOME/.yandex/bin/yc compute instance create 
-            --name my-vm-${{ github.sha }} 
-            --zone ru-central1-a 
-            --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 
-            --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2004-lts-stable,size=30 
-            --ssh-key ~/.ssh/id_rsa.pub 
-            --metadata serial-port-enable=true
-
-      - name: Get VM IP Address
-        id: get_vm_ip
-        run: |
-          VM_NAME="my-vm-${{ github.sha }}"
-          VM_IP=$($HOME/.yandex/bin/yc compute instance get $VM_NAME --format json | jq -r '.network_interfaces[0].primary_v4_address.one_to_one_nat.address')
-          echo "VM_IP=$VM_IP" >> $GITHUB_ENV
-
-      - name: Configure SSH
-        uses: webfactory/ssh-agent@v0.5.4
         with:
-          ssh-private-key: ${{ secrets.YC_SSH_PRIVATE_KEY }}
+          yc_oauth_token: ${{ secrets.YC_OAUTH_TOKEN }}
+          folder-id: ${{ secrets.YC_FOLDER_ID }}
+          vm-cores: 2
+          vm-platform-id: 'standard-v2'
+          vm-memory: 512Mb
+          vm-disk-size: 5Gb
+          vm-core-fraction: 5
+          vm-subnet-id: ${{ secrets.YC_SUBNET_ID }}
+          docker-compose-path: './docker-compose.yc.yaml'
 
-      - name: Install Docker on VM
+      - name: Output VM details
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ env.VM_IP }} "sudo apt-get update && sudo apt-get install -y docker.io"
-
-      - name: Deploy Docker container on VM
-        run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ env.VM_IP }} "docker run -d -p 80:8080 vvo15/my-image-server1:${{ github.sha }}"
+          echo "VM deployment finished."
