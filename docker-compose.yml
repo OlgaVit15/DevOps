@@ -25,7 +25,7 @@ services:
       - mynetwork
 
   app:
-    image: vvo15/my-image-server1
+    image: vvo15/my-image-server
     restart: always
     depends_on:
       - db
