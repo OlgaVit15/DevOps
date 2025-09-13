@@ -120,7 +120,7 @@ jobs:
           vm-cores: 2
           vm-memory: 512Mb
           vm-name: my-app-vm
-          vm-disk-size: 5Gb
+          vm-disk-size: 15Gb
           vm-subnet-id: ${{ secrets.YC_SUBNET_ID }}
           docker-compose-path: docker-compose.yml
           user-data-path: user_data.txt
